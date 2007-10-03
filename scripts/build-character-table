@@ -1,0 +1,158 @@
+#!/usr/bin/perl
+# Script to build the LaTeX::Encode::EncodingTable module
+# This script is not meant to be installed.
+
+use strict;
+use warnings;
+
+use HTML::Entities qw(%char2entity);
+use Pod::LaTeX;
+
+
+my %explicit_defn
+
+    = ( # LaTeX special characters
+
+	'\\'       =>   '\\textbackslash',  # command character
+        '{'        => '\\{',                # begin group
+        '}'        => '\\}',                # end group
+        '%'        => '\\%',                # comment
+        '#'        => '\\#',                # command parameter
+        '$'        => '\\$',                # introduces math mode
+        '_'        => '\\_',                # subscript
+        '^'        => '\\^{ }',             # superscript
+        '&'        => '\\&',                # tabbing character
+        '~'        => '\\texttildelow',     # non-breaking space
+
+        # Characters that are not set as themselves
+
+        '<'        => '$<$',
+        '>'        => '$>$',
+
+        # Symbols
+
+        "\x{a7}"   => '\\S',            # Section mark
+        "\x{b6}"   => '\\P',            # Paragraph
+        "\x{c5}"   => '\\AA',           # Scandinavian A-with-circle
+        "\x{d8}"   => '\\O',            # Scandinavian O-with-slash
+        "\x{df}"   => '\\ss',           # German sharp S
+        "\x{e5}"   => '\\aa',           # Scandinavian a-with-circle
+        "\x{f8}"   => '\\o',            # Scandinavian o-with-slash
+        "\x{131}"  => '\\i',            # dotless i
+        "\x{141}"  => '\\L',            # Polish suppressed-l
+        "\x{142}"  => '\\l',            # Polish suppressed-L
+        "\x{152}"  => '\\OE',           # French ligature OE
+        "\x{153}"  => '\\oe',           # French ligature oe
+        "\x{237}"  => '\\j',            # dotless j
+        "\x{2020}" => '\\dag',          # Dagger
+        "\x{2021}" => '\\ddag',         # Double-dagger
+
+    );
+
+
+my %verbatim_chars
+
+    = ( '<'  => '<',
+        '>'  => '>',
+    );
+
+
+# Print out the head of the file
+
+print(join("\n", ("# LaTeX::Encode character encoding table",
+                  "# Warning this module was automatically generated",
+                  "",
+                  "package LaTeX::Encode::Table;",
+                  "",
+                  "use strict;",
+                  "use warnings;",
+                  'use vars qw(@EXPORT %latex_encoding $encoded_char_re);',
+                  '',
+                  "use base 'Exporter';",
+                  '@EXPORT = qw(%latex_encoding $encoded_char_re);',
+                  "",
+                  '%latex_encoding = (')),
+      "\n");
+
+
+foreach my $char (sort keys %char2entity) {
+    my $html_enc  = $char2entity{$char};
+    my $latex_enc;
+    if (exists $explicit_defn{$char}) {
+        $latex_enc = $explicit_defn{$char};
+    }
+    elsif ($html_enc =~ /^\&(\w+);$/) {
+        $latex_enc = $Pod::LaTeX::HTML_Escapes{$1};
+    }
+
+    if (!defined($latex_enc)) {
+        printf(STDERR "ignoring character 0x%x%s - no known encoding\n",
+               ord($char), (ord($char) >= 0x20 && ord($char) < 256) ? " '$char'" : ""); 
+        next;
+    }
+    if ($char eq $latex_enc) {
+        printf(STDERR "ignoring character 0x%x%s - encoding equals character\n",
+               ord($char), (ord($char) >= 0x20 && ord($char) < 256) ? " '$char'" : ""); 
+        next;
+    }
+
+    # Make sure that characters are properly escaped for inclusion in
+    # a Perl single-quoted string
+
+    $latex_enc =~ s{\\}{\\\\}g;
+    $latex_enc =~ s{'}{\\'}g;
+    $latex_enc =~ s/\{\}$//;
+
+    printf("  %-12s => %-28s  # %s - %s\n", 
+           sprintf("chr(0x%x)", ord($char)),
+           sprintf("'%s',", $latex_enc || '<undef>'), 
+           ((ord($char) > 0x20) && (ord($char) < 256)) ? $char : '', $html_enc);
+}
+
+# Print out the tail of the file
+
+print(join("\n", (');',
+                  '',
+                  '$encoded_char_re = join(\'\', sort keys %latex_encoding);',
+                  '$encoded_char_re =~ s/\\\\/\\\\\\\\/;',
+                  '$encoded_char_re = qr{ [$encoded_char_re] }x;',
+                  '',
+                  '1;')),
+      "\n");
+
+exit(0);
+
+__END__
+
+=head1 NAME
+
+build-character-table
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+This is a script to rebuild the 
+
+
+=head1 AUTHOR
+
+Andrew Ford E<lt>a.ford@ford-mason.co.ukE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2007 Andrew Ford.  All Rights Reserved.
+
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
+
+=cut
+
+
+# Local Variables:
+# mode: perl
+# perl-indent-level: 4
+# indent-tabs-mode: nil
+# End:
+#
+# vim: expandtab shiftwidth=4:

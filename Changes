@@ -1,0 +1,11 @@
+2007-10-02  Andrew Ford  <a.ford@ford-mason.co.uk>
+
+        * version 0.02 
+
+	* added a script build-character-table to build the hash of
+          characters to be encoded.
+
+2007-09-20  Andrew Ford  <a.ford@ford-mason.co.uk>
+
+	* 0.01 - Initial version 
+

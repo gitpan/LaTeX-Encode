@@ -1,0 +1,76 @@
+#!/usr/bin/perl
+# Script to generate and format a references document giving the
+# characters that are encoded.
+
+use strict;
+use warnings;
+
+use blib;
+use LaTeX::Encode;
+use LaTeX::Encode::EncodingTable;
+use LaTeX::Table;
+use LaTeX::Driver;
+use File::Slurp;
+use HTML::Entities qw(%char2entity);
+
+my $basename = './character-encodings';
+
+
+# Create the table of encoded characters using LaTeX::Table
+
+my $header = [ [ 'Char (hex)', 'Entity', 'Encoding', 'Representation'  ] ];
+
+my $data = [];
+foreach my $char (sort keys %latex_encoding) {
+    my $entity = $char2entity{$char};
+    push(@$data, [ sprintf("0x%x",
+			   ord($char)),
+		   sprintf("\\texttt{%s}", latex_encode($entity)),
+		   sprintf("\\texttt{%s}", latex_encode(latex_encode($char))),
+		   latex_encode($char) ]);
+}
+
+my $table = LaTeX::Table->new( { caption => 'Characters',
+				 label   => 'table:charencodings',
+				 type    => 'xtab',
+				 header  => $header,
+				 data    => $data } );
+
+$table = $table->generate_string;
+
+
+# Read the template from the DATA section and create the source document
+
+my $doc = join("", (<DATA>));
+$doc =~ s/\[\* table \*\]/$table/;
+
+write_file("${basename}.tex", \$doc);
+
+
+# Format the document with LaTeX::Driver
+
+my $drv = LaTeX::Driver->new(source => $basename . ".tex",
+			     output => $basename . ".dvi",
+			     format => 'dvi',
+                             tmpdir => 1,
+                             DEBUG  => 1,
+                             DEBUGPREFIX => '#latex: ',
+);
+
+$drv->run;
+
+
+exit(0);
+
+__END__
+% [% TAGS star %]
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{xtab}
+\title{Characters encoded by \texttt{LaTeX::Encode}}
+\author{automatically generated}
+\begin{document}
+\maketitle
+[* table *]
+\end{document}

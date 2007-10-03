@@ -1,0 +1,25 @@
+#================================================== -*- indented-text -*-
+#
+# TODO
+#
+# DESCRIPTION
+#   TODO list for the LaTeX-Encode package, containing known bugs,
+#   limitations, planned enhancements, long term visions and a few
+#   whacky ideas.
+#
+# AUTHOR
+#   Andrew Ford   <a.ford@ford-mason.co.uk>
+#
+#------------------------------------------------------------------------
+# $Id: TODO 8 2007-10-03 10:59:49Z andrew $
+#========================================================================
+
+* add more unit tests
+
+* improve documentation
+
+* verbatim mode - don't take "<" and ">" from math mode (or any other
+  characters that do not have standard fixed width).
+
+
+

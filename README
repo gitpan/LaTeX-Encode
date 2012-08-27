@@ -1,10 +1,16 @@
 LaTeX-Encode
 ============
 
-LaTeX::Encode exports the function 'latex_encode' which encodes characters
+LaTeX::Encode exports the function 'latex_encode()' which encodes characters
 in a string, that would be incorrectly interpreted by LaTeX.
 
-The latex_encode function takes a text string and an optional
+Additional encodings can be added to the standard encoding table with the
+'add_latex_encodings()' function, while encodings can be removed with the
+'remove_latex_encodings()' function.  Additions and deletions can also be specified 
+on the 'use' statement (e.g.: "use LaTeX::Encode add => { '@' => 'AT' };".
+
+
+The 'latex_encode()' function takes a text string and an optional
 reference to a hash of options.  The options currently supported are
 "exclude" to specify a list of characters that should not be encoded
 (often this is "\\{}" to allow LaTeX commands to be used in the text
@@ -31,7 +37,7 @@ To install this module, run the following commands:
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2007, Andrew Ford <a.ford@ford-mason.co.uk>
+Copyright (C) 2007-2012, Andrew Ford <a.ford@ford-mason.co.uk>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

@@ -10,12 +10,12 @@
 #   Andrew Ford <a.ford@ford-mason.co.uk>
 #
 # COPYRIGHT
-#   Copyright (C) 2007 Andrew Ford.   All Rights Reserved.
+#   Copyright (C) 2007-2012 Andrew Ford.   All Rights Reserved.
 #
 #   This module is free software; you can redistribute it and/or
 #   modify it under the same terms as Perl itself.
 #
-#   $Id: Encode.pm 10 2007-10-03 11:00:21Z andrew $
+#   $Id: Encode.pm 15 2012-08-27 12:12:07Z andrew $
 #========================================================================
 
 package LaTeX::Encode;
@@ -23,12 +23,21 @@ package LaTeX::Encode;
 use strict;
 use warnings;
 
-use Exporter;
-use base qw(Exporter);
+require 5.008_001;
+
 use LaTeX::Encode::EncodingTable;
 
-our $VERSION = 0.03;
-our @EXPORT  = qw(latex_encode);
+use parent qw(Exporter);
+
+our $VERSION     = 0.04;
+our @EXPORT      = qw(latex_encode);
+our @EXPORT_OK   = qw(add_latex_encodings remove_latex_encodings reset_latex_encodings);
+our %EXPORT_TAGS = ( all => [ qw( latex_encode 
+                                  add_latex_encodings
+                                  remove_latex_encodings
+                                  reset_latex_encodings ) ] );
+
+our @mappings_specified_on_import;
 
 
 # Encode text with characters special to LaTeX
@@ -78,8 +87,8 @@ sub latex_encode {
 
     $text =~ s{ ($encoded_char_re)([\sa-zA-Z]?)}
               { my $encoded  = $latex_encoding{$1};
-                my $nextchar = $2;
-                my $sepchars = "";
+                my $nextchar = $2 || '';
+                my $sepchars = '';
                 if ($nextchar and substr($encoded, -1) =~ /[a-zA-Z]/) {
                     $sepchars = ($nextchar =~ /\s/) ? '{}' : ' ';
                 }
@@ -95,6 +104,88 @@ sub latex_encode {
     return $text;
 }
 
+
+sub add_latex_encodings {
+    my (%new_encoding) = @_;
+    my %old_encoding;
+    my $changed;
+
+    foreach my $key (keys %new_encoding) {
+        if ((! exists $latex_encoding{$key}) or ($latex_encoding{$key} ne $new_encoding{$key})) {
+            $old_encoding{$key} = $latex_encoding{$key} if defined wantarray and exists $latex_encoding{$key};
+            $latex_encoding{$key} = $new_encoding{$key};
+            $changed = 1;
+        }
+    }
+    LaTeX::Encode::EncodingTable::_compile_encoding_regexp()
+        if $changed;
+    return unless defined wantarray;
+    return %old_encoding;
+}
+
+sub remove_latex_encodings {
+    my (@keys) = @_;
+    my %removed_encoding;
+    
+    foreach my $key (@keys) {
+        if (exists $latex_encoding{$key}) {
+            $removed_encoding{$key} = delete $latex_encoding{$key};
+        }
+    }
+    LaTeX::Encode::EncodingTable::_compile_encoding_regexp()
+        if keys %removed_encoding;
+    return unless defined wantarray;
+    return %removed_encoding;
+}
+
+
+sub reset_latex_encodings {
+    my ($class, $forget_import_specifiers) = @_;
+    if ($class !~ /::/) {
+        $forget_import_specifiers = $class;
+    }
+
+    delete $INC{'LaTeX/Encode/EncodingTable.pm'};
+    undef &LaTeX::Encode::EncodingTable::_compile_encoding_regexp;
+    require LaTeX::Encode::EncodingTable;
+
+    if (! $forget_import_specifiers ) {
+        foreach my $spec ( @mappings_specified_on_import ) {
+            if ($spec->[0] eq 'add') {
+                add_latex_encodings(%{$spec->[1]});
+            }
+            elsif ($spec->[0] eq 'remove') {
+                remove_latex_encodings(@{$spec->[1]});
+            }
+        }
+    }
+    
+    return;
+}
+
+sub import {
+    my ($self, @list) = @_;
+    $DB::single = 1;
+    my $i = 0;
+    while ($i < @list) {
+        if ($list[$i] eq 'add') {
+            my ($add, $to_add) = splice(@list, $i, 2);
+            add_latex_encodings(%$to_add);
+            push @mappings_specified_on_import, [ 'add' => $to_add ];
+        }
+        elsif ($list[$i] eq 'remove') {
+            my ($remove, $to_remove) = splice(@list, $i, 2);
+            remove_latex_encodings(@$to_remove);
+            push @mappings_specified_on_import, [ 'remove' => $to_remove ];
+        }
+        else {
+            $i++;
+        }
+    }
+    $self->export_to_level(1, $self, @list);
+    return;
+}
+
 1;
 
 __END__
@@ -105,13 +196,13 @@ LaTeX::Encode - encode characters for LaTeX formatting
 
 =head1 SYNOPSIS
 
-  use LaTeX::Encode;
+  use LaTeX::Encode ':all', add => { '@' => 'AT' }, remove => [ '$' ];
 
   $latex = latex_encode($text, %options);
 
 =head1 VERSION
 
-This manual page describes version 0.03 of the C<LaTeX::Encode> module.
+This manual page describes version 0.04 of the C<LaTeX::Encode> module.
 
 
 =head1 DESCRIPTION
@@ -173,6 +264,25 @@ Pounds Sterling symbol is encoded as C<\\textsterling{}>).  Setting
 C<use_textcomp = 0> turns off these encodings.  NOT YET IMPLEMENTED
 
 =back
+
+
+=item C<add_latex_encodings(%encodings)>
+
+Adds a set of new or modified encodings.  Returns a hash of any encodings that were
+modified.
+
+
+=item C<remove_latex_encodings(@keys)>
+
+Removes a set of encodings.  Returns a hash of the removed encodings.
+
+
+=item C<reset_latex_encodings($forget_import_specifiers)>
+
+Resets the LaTeX encodings to the state that they were when the module was loaded
+(including any additions and removals specified on the 'use' statement), or to the
+standard set of encodings if C<$forget_import_specifiers> is true.
+
 
 =back
 
@@ -241,7 +351,7 @@ Andrew Ford E<lt>a.ford@ford-mason.co.ukE<gt>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2007 Andrew Ford.  All Rights Reserved.
+Copyright (C) 2007-2012 Andrew Ford.  All Rights Reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

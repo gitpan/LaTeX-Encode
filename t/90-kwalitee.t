@@ -8,6 +8,10 @@ if ( not $ENV{TEST_AUTHOR} ) {
     plan( skip_all => $msg );
 }
 
-eval { require Test::Kwalitee; Test::Kwalitee->import() };
+eval {
+    require Test::Kwalitee;
+    Test::Kwalitee->import(
+        tests => [ qw( -has_test_pod -has_test_pod_coverage ) ] );
+};
 
 plan( skip_all => 'Test::Kwalitee not installed; skipping' ) if $@;

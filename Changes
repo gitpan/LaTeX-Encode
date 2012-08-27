@@ -1,3 +1,24 @@
+2012-08-27  Andrew Ford  <a.ford@ford-mason.co.uk>
+
+        * version 0.04
+
+        * added requirement for Perl 5.8.1 or later due to deficiencies in 
+          Unicode handling of earlier Perl versions.
+
+        * updated encoding table to add Turkish characters (RT #55526) and to not include
+          spaces after accented characters (RT #49357)
+
+        * switch from 'base' to 'parent' for setting up inheritance
+
+        * added add_latex_encodings() and remove_latex_encodings() functions to update the
+          encoding table.
+
+        * allow 'add' and 'remove' specifiers to be provided on the 'use' statement
+
+2007-10-03  Andrew Ford  <a.ford@ford-mason.co.uk>
+
+        * version 0.03
+
 2007-10-02  Andrew Ford  <a.ford@ford-mason.co.uk>
 
         * version 0.02 

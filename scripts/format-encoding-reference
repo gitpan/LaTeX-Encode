@@ -6,6 +6,7 @@ use strict;
 use warnings;
 
 use blib;
+use charnames qw();
 use LaTeX::Encode;
 use LaTeX::Encode::EncodingTable;
 use LaTeX::Table;
@@ -18,16 +19,20 @@ my $basename = './character-encodings';
 
 # Create the table of encoded characters using LaTeX::Table
 
-my $header = [ [ 'Char (hex)', 'Entity', 'Encoding', 'Representation'  ] ];
+my $header = [ [ 'Code', 'Char', 'Entity', 'Encoding', 'Name'  ] ];
 
 my $data = [];
 foreach my $char (sort keys %latex_encoding) {
-    my $entity = $char2entity{$char};
-    push(@$data, [ sprintf("0x%x",
-			   ord($char)),
+    my $charcode = ord $char;
+    my $entity   = $char2entity{$char};
+    my $charname = charnames::viacode($charcode);
+
+    push(@$data, [ sprintf("0x%x", $charcode),
+                   latex_encode($char),
 		   sprintf("\\texttt{%s}", latex_encode($entity)),
-		   sprintf("\\texttt{%s}", latex_encode(latex_encode($char))),
-		   latex_encode($char) ]);
+                   sprintf("\\texttt{%s}", latex_encode(latex_encode($char))),
+                   "\\small $charname"
+		    ]);
 }
 
 my $table = LaTeX::Table->new( { caption => 'Characters',
@@ -64,9 +69,14 @@ exit(0);
 
 __END__
 % [% TAGS star %]
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper,10pt]{article}
+\usepackage[textwidth=180mm,textheight=250mm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{textcomp}
+\usepackage{booktabs}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
 \usepackage{xtab}
 \title{Characters encoded by \texttt{LaTeX::Encode}}
 \author{automatically generated}

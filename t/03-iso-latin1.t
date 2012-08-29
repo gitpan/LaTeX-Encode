@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# $Id: 03-iso-latin1.t 19 2012-08-29 06:19:44Z andrew $
 
 use strict;
 use warnings;

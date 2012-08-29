@@ -18,5 +18,9 @@ no_index:
     - t
     - inc
 requires:
+  HTML::Entities: 0
+  Pod::LaTeX: 0
+  Readonly: 0
   Test::More: 0
-version: 0.04
+  parent: 0
+version: 0.05

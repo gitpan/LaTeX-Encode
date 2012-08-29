@@ -15,7 +15,7 @@
 #   This module is free software; you can redistribute it and/or
 #   modify it under the same terms as Perl itself.
 #
-#   $Id: Encode.pm 15 2012-08-27 12:12:07Z andrew $
+#   $Id: Encode.pm 24 2012-08-29 06:35:33Z andrew $
 #========================================================================
 
 package LaTeX::Encode;
@@ -28,8 +28,9 @@ require 5.008_001;
 use LaTeX::Encode::EncodingTable;
 
 use parent qw(Exporter);
+use Readonly;
 
-our $VERSION     = 0.04;
+our $VERSION     = 0.05;
 our @EXPORT      = qw(latex_encode);
 our @EXPORT_OK   = qw(add_latex_encodings remove_latex_encodings reset_latex_encodings);
 our %EXPORT_TAGS = ( all => [ qw( latex_encode 
@@ -39,15 +40,19 @@ our %EXPORT_TAGS = ( all => [ qw( latex_encode
 
 our @mappings_specified_on_import;
 
+Readonly my $IMPORT_TAG_ADD    => 'add';
+Readonly my $IMPORT_TAG_REMOVE => 'remove';
+
 
 # Encode text with characters special to LaTeX
 
 sub latex_encode {
     my $text = shift;
     my $options = ref $_[0] ? shift : { @_ };
-    my $exceptions   = $options->{except};
-    my $iquotes      = $options->{iquotes};
-    my $use_textcomp = (!exists($options->{use_textcomp}) || $options->{use_textcomp});
+    my $exceptions    = $options->{except};
+    my $iquotes       = $options->{iquotes};
+    my $packages_reqd = $options->{packages};
+
 
     # If a list of exception characters was specified then we replace
     # those characters in the text string with something that is not
@@ -85,14 +90,10 @@ sub latex_encode {
 
     # Replace any characters that need encoding
 
-    $text =~ s{ ($encoded_char_re)([\sa-zA-Z]?)}
-              { my $encoded  = $latex_encoding{$1};
-                my $nextchar = $2 || '';
-                my $sepchars = '';
-                if ($nextchar and substr($encoded, -1) =~ /[a-zA-Z]/) {
-                    $sepchars = ($nextchar =~ /\s/) ? '{}' : ' ';
-                }
-                "$encoded$sepchars$nextchar" }gxe;
+    $text =~ s{ ($encoded_char_re) }
+              { $packages_reqd->{$provided_by{$1}} = 1
+                    if ref $packages_reqd and exists $provided_by{$1};
+                $latex_encoding{$1} }gsxe;
 
 
     # If the caller specified exceptions then we need to decode them
@@ -104,6 +105,9 @@ sub latex_encode {
     return $text;
 }
 
+
+# Add encodings to the encoding table
+# Return the changed encodings
 
 sub add_latex_encodings {
     my (%new_encoding) = @_;
@@ -123,6 +127,10 @@ sub add_latex_encodings {
     return %old_encoding;
 }
 
+
+# Remove encodings from the encoding table
+# Return the removed encodings
+
 sub remove_latex_encodings {
     my (@keys) = @_;
     my %removed_encoding;
@@ -139,6 +147,8 @@ sub remove_latex_encodings {
 }
 
 
+# Reset the encoding table
+
 sub reset_latex_encodings {
     my ($class, $forget_import_specifiers) = @_;
     if ($class !~ /::/) {
@@ -151,10 +161,10 @@ sub reset_latex_encodings {
 
     if (! $forget_import_specifiers ) {
         foreach my $spec ( @mappings_specified_on_import ) {
-            if ($spec->[0] eq 'add') {
+            if ($spec->[0] eq $IMPORT_TAG_ADD) {
                 add_latex_encodings(%{$spec->[1]});
             }
-            elsif ($spec->[0] eq 'remove') {
+            elsif ($spec->[0] eq $IMPORT_TAG_REMOVE) {
                 remove_latex_encodings(@{$spec->[1]});
             }
         }
@@ -163,20 +173,24 @@ sub reset_latex_encodings {
     return;
 }
 
+
+# Import function - picks out 'add' and 'remove' tags and adds or removes encodings
+# appropriately
+
 sub import {
     my ($self, @list) = @_;
     $DB::single = 1;
     my $i = 0;
     while ($i < @list) {
-        if ($list[$i] eq 'add') {
+        if ($list[$i] eq $IMPORT_TAG_ADD) {
             my ($add, $to_add) = splice(@list, $i, 2);
             add_latex_encodings(%$to_add);
-            push @mappings_specified_on_import, [ 'add' => $to_add ];
+            push @mappings_specified_on_import, [ $IMPORT_TAG_ADD => $to_add ];
         }
-        elsif ($list[$i] eq 'remove') {
+        elsif ($list[$i] eq $IMPORT_TAG_REMOVE) {
             my ($remove, $to_remove) = splice(@list, $i, 2);
             remove_latex_encodings(@$to_remove);
-            push @mappings_specified_on_import, [ 'remove' => $to_remove ];
+            push @mappings_specified_on_import, [ $IMPORT_TAG_REMOVE => $to_remove ];
         }
         else {
             $i++;
@@ -198,18 +212,23 @@ LaTeX::Encode - encode characters for LaTeX formatting
 
   use LaTeX::Encode ':all', add => { '@' => 'AT' }, remove => [ '$' ];
 
-  $latex = latex_encode($text, %options);
+  $latex_string  = latex_encode($text, %options);
+
+  %old_encodings = add_latex_encodings( chr(0x2002) => '\\hspace{.6em}' );
+  %old_encodings = remove_latex_encodings( '<', '>' );
+
+  reset_latex_encodings(1);
 
 =head1 VERSION
 
-This manual page describes version 0.04 of the C<LaTeX::Encode> module.
+This manual page describes version 0.05 of the C<LaTeX::Encode> module.
 
 
 =head1 DESCRIPTION
 
 This module provides a function to encode text that is to be formatted
 with LaTeX.  It encodes characters that are special to LaTeX or that
-are represented in LaTeX by LaTeX commands.
+are represented in LaTeX by LaTeX text-mode commands.
 
 The special characters are: C<\> (command character), C<{> (open
 group), C<}> (end group), C<&> (table column separator), C<#>
@@ -256,12 +275,10 @@ LaTeX single or double quotes; double quotes around a phrase will be
 converted to "``" and "''" and single quotes to "`" and "'".  This is
 sometimes called "intelligent quotes"
 
-=item C<use_textcomp>
+=item C<packages>
 
-By default the C<latex_encode> filter will encode characters with the
-encodings provided by the C<textcomp> LaTeX package (for example the
-Pounds Sterling symbol is encoded as C<\\textsterling{}>).  Setting
-C<use_textcomp = 0> turns off these encodings.  NOT YET IMPLEMENTED
+If passed a reference to a hash C<latex_encode()> will update the hash with names of LaTeX
+packages that are required for typesetting the encoded string.
 
 =back
 
@@ -343,7 +360,7 @@ None known.
 Not all LaTeX special characters are included in the encoding tables
 (more may be added when I track down the definitions).
 
-The C<use_textcomp> option is not implemented.
+
 
 =head1 AUTHOR
 

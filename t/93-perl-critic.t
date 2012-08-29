@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# $Id: 93-perl-critic.t 17 2012-08-29 06:16:11Z andrew $
 
 use strict;
 use warnings;

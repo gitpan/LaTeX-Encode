@@ -1,3 +1,18 @@
+2012-08-28  Andrew Ford  <a.ford@ford-mason.co.uk>
+
+        * version 0.05
+
+        * added more symbols
+
+        * build-character-table now builds a %provided_by map that gives the LaTeX package
+          that provides the LaTeX command used in the encoding
+
+        * removed unimplemented "use_textcomp" option
+
+        * added "packages" option to latex_encode() to pass a reference to a hash that is
+          updated with the names of optional LaTeX packages (styles) that implement the
+          commands included in the encoded string
+
 2012-08-27  Andrew Ford  <a.ford@ford-mason.co.uk>
 
         * version 0.04

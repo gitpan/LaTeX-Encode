@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# $Id: 04-utf8.t 19 2012-08-29 06:19:44Z andrew $
 
 use strict;
 use warnings;
@@ -11,7 +12,7 @@ use charnames qw();
 use Test::More tests => 8 + int keys %latex_encoding;
 
 
-ok(int keys %latex_encoding > 300, 'encoding table isn\'t empty');
+ok(int keys %latex_encoding > 300, "encoding table isn\'t empty (has " . int(keys %latex_encoding) . " keys)");
 
 # spot checks
 

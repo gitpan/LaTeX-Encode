@@ -1,3 +1,16 @@
+2012-08-29  Andrew Ford  <a.ford@ford-mason.co.uk>
+
+        * version 0.06
+
+        * added script "latex-encode" as a simple filter that uses LaTeX::Encode
+
+        * added a couple more encodings
+
+        * reverted to 'base' from 'parent' for setting up inheritance
+
+        * updated author tests
+
+
 2012-08-28  Andrew Ford  <a.ford@ford-mason.co.uk>
 
         * version 0.05

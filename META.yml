@@ -18,9 +18,10 @@ no_index:
     - t
     - inc
 requires:
+  Getopt::Long: 0
   HTML::Entities: 0
   Pod::LaTeX: 0
+  Pod::Usage: 0
   Readonly: 0
   Test::More: 0
-  parent: 0
-version: 0.05
+version: 0.06

@@ -1,4 +1,4 @@
-# $Id: Makefile.PL 25 2012-08-29 06:35:46Z andrew $
+# $Id: Makefile.PL 28 2012-08-30 20:00:09Z andrew $
 
 use strict;
 use warnings;
@@ -10,12 +10,14 @@ WriteMakefile(
     VERSION_FROM        => 'lib/LaTeX/Encode.pm',
     ABSTRACT_FROM       => 'lib/LaTeX/Encode.pm',
     PL_FILES            => {},
+    EXE_FILES           => [ 'scripts/latex-encode' ],
     PREREQ_PM => {
-        'HTML::Entities' => 0,
-        'Pod::LaTeX'    => 0,
-        'Readonly'      => 0,
-        'Test::More'    => 0,
-        'parent'        => 0,
+        'Getopt::Long'      => 0,
+        'HTML::Entities'    => 0,
+        'Pod::LaTeX'        => 0,
+        'Pod::Usage'        => 0,
+        'Readonly'          => 0,
+        'Test::More'        => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'LaTeX-Encode-*' },

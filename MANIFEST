@@ -10,6 +10,7 @@ lib/LaTeX/Encode/EncodingTable.pm
 scripts/README
 scripts/build-encoding-table
 scripts/format-encoding-reference
+scripts/latex-encode
 scripts/character-encodings.tex
 scripts/character-encodings.dvi
 t/00-basic.t

@@ -1,6 +1,6 @@
 # LaTeX::Encode character encoding table
 # Note: this module was automatically generated
-# by build-encoding-table (version 22)
+# by build-encoding-table (version 28)
 
 package LaTeX::Encode::EncodingTable;
 
@@ -459,6 +459,7 @@ our %latex_encoding = (
     chr(0x2039) => '{\\guilsinglleft}',           # SINGLE LEFT-POINTING ANGLE QUOTATION MARK    (&lsaquo;)
     chr(0x203a) => '{\\guilsinglright}',          # SINGLE RIGHT-POINTING ANGLE QUOTATION MARK   (&rsaquo;)
     chr(0x203b) => '{\\textreferencemark}',       # REFERENCE MARK
+    chr(0x203d) => '{\\textinterrobang}',         # INTERROBANG
     chr(0x203e) => '{\\textasciimacron}',         # OVERLINE                                     (&oline;)
     chr(0x2044) => '{\\textfractionsolidus}',     # FRACTION SLASH                               (&frasl;)
 
@@ -576,6 +577,12 @@ our %latex_encoding = (
     chr(0x26ad) => '{\\textmarried}',             # MARRIAGE SYMBOL
     chr(0x26ae) => '{\\textdivorced}',            # DIVORCE SYMBOL
 
+    # Supplemental Punctuation
+
+    chr(0x2e18) => '{\\textinterrobangdown}',     # INVERTED INTERROBANG
+    chr(0x2e3a) => '---{}---',                    # unnamed character
+    chr(0x2e3b) => '---{}---{}---',               # unnamed character
+
 );
 
 our %provided_by = (
@@ -588,6 +595,7 @@ our %provided_by = (
     chr(0x0e3f) => 'textcomp',    # THAI CURRENCY SYMBOL BAHT
     chr(0x2016) => 'textcomp',    # DOUBLE VERTICAL LINE
     chr(0x203b) => 'textcomp',    # REFERENCE MARK
+    chr(0x203d) => 'textcomp',    # INTERROBANG
     chr(0x20a1) => 'textcomp',    # COLON SIGN
     chr(0x20a4) => 'textcomp',    # LIRA SIGN
     chr(0x20a6) => 'textcomp',    # NAIRA SIGN
@@ -623,6 +631,7 @@ our %provided_by = (
     chr(0x2653) => 'marvosym',    # PISCES
     chr(0x26ad) => 'textcomp',    # MARRIAGE SYMBOL
     chr(0x26ae) => 'textcomp',    # DIVORCE SYMBOL
+    chr(0x2e18) => 'textcomp',    # INVERTED INTERROBANG
 
 );
 
@@ -650,7 +659,7 @@ This module is not intended to be used except by LaTeX::Encode.
 
 =head1 VERSION
 
-This manual page describes version 22 of the
+This manual page describes version 28 of the
 C<LaTeX::Encode::EncodingTable> module.
 
 =head1 DESCRIPTION

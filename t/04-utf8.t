@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: 04-utf8.t 19 2012-08-29 06:19:44Z andrew $
+# $Id: 04-utf8.t 27 2012-08-30 19:54:25Z andrew $
 
 use strict;
 use warnings;
@@ -28,12 +28,14 @@ is($latex_encoding{chr(0x20ac)}, '{\\texteuro}',     'encoding for: euro sign'  
 # thorough test of all entries in encoding table
 
 foreach my $char (sort keys %latex_encoding) {
-    my $charcode = ord($char);
-    my $charname = charnames::viacode($charcode);
     my $encoding = $latex_encoding{$char};
+    my $charcode = ord($char);
+    my $charname = charnames::viacode($charcode) || '';
+    my $comment  = $charname || "unnamed character encoded as '$encoding'";
 
+    warn(sprintf('encoding for charcode U+%04d is undefined', $charcode))
+        if !defined $encoding;
     is(latex_encode("$charname: $char."), "$charname: $encoding.",
-       sprintf("translating U+%04x (%s)", $charcode, $charname));
-
+       sprintf("translating U+%04x (%s)", $charcode, $comment));
 }
 

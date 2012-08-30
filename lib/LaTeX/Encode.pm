@@ -15,7 +15,7 @@
 #   This module is free software; you can redistribute it and/or
 #   modify it under the same terms as Perl itself.
 #
-#   $Id: Encode.pm 24 2012-08-29 06:35:33Z andrew $
+#   $Id: Encode.pm 28 2012-08-30 20:00:09Z andrew $
 #========================================================================
 
 package LaTeX::Encode;
@@ -27,10 +27,12 @@ require 5.008_001;
 
 use LaTeX::Encode::EncodingTable;
 
-use parent qw(Exporter);
 use Readonly;
 
-our $VERSION     = 0.05;
+use base qw(Exporter);
+
+our $VERSION     = 0.06;
+
 our @EXPORT      = qw(latex_encode);
 our @EXPORT_OK   = qw(add_latex_encodings remove_latex_encodings reset_latex_encodings);
 our %EXPORT_TAGS = ( all => [ qw( latex_encode 
@@ -221,7 +223,7 @@ LaTeX::Encode - encode characters for LaTeX formatting
 
 =head1 VERSION
 
-This manual page describes version 0.05 of the C<LaTeX::Encode> module.
+This manual page describes version 0.06 of the C<LaTeX::Encode> module.
 
 
 =head1 DESCRIPTION

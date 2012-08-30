@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Script to build the LaTeX::Encode::EncodingTable module
 # This script is not meant to be installed.
-# $Id: build-encoding-table 22 2012-08-29 06:32:10Z andrew $
+# $Id: build-encoding-table 28 2012-08-30 20:00:09Z andrew $
 
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ use HTML::Entities qw(%char2entity);
 use Pod::LaTeX;
 
 
-our $revision = '$Revision: 22 $';
+our $revision = '$Revision: 28 $';
 $revision =~ s/.*?(\d+).*/$1/;
 
 # Map of character code to encoding that is built up, before being output.  It is
@@ -249,6 +249,7 @@ my %char_encoding
         chr(0x2015) => '\\rule{1em}{1pt}',
         chr(0x2016) => { 'textcomp' => '\\textbardbl'           },
         chr(0x203b) => { 'textcomp' => '\\textreferencemark'    },
+        chr(0x203d) => { 'textcomp' => '\\textinterrobang'      },
         chr(0x20a1) => { 'textcomp' => '\\textcolonmonetary'    },
         chr(0x20a4) => { 'textcomp' => '\\textlira'             },
         chr(0x20a6) => { 'textcomp' => '\\textnaira'            },
@@ -294,6 +295,10 @@ my %char_encoding
         chr(0x266f) => '\\ensuremath{\\sharp}',
         chr(0x26ad) => { 'textcomp' => '\\textmarried'          },
         chr(0x26ae) => { 'textcomp' => '\\textdivorced'         },
+
+        chr(0x2e18) => { 'textcomp' => '\\textinterrobangdown'  },
+        chr(0x2e3a) => '---{}---',
+        chr(0x2e3b) => '---{}---{}---',
     );
 
 
@@ -332,6 +337,7 @@ my %comments   = ( 0x00a0 => 'C1 Controls and Latin-1 Supplement',
                    0x20a0 => 'Currency Symbols',
                    0x2200 => 'Mathematical Operations',
                    0x2600 => 'Miscellaneous Symbols',
+                   0x2e00 => 'Supplemental Punctuation',
     );
 
 
@@ -447,7 +453,7 @@ sub encoding_table {
         my $line = sprintf("    %-11s => %-30s # %-44s%s",
                            sprintf("chr(0x%04x)", $charcode),
                            sprintf("'%s',", $latex_enc || '<undef>'),
-                           charnames::viacode($charcode),
+                           charnames::viacode($charcode) || 'unnamed character',
                            $html_enc ? " ($html_enc)" : '');
 
         $line =~ s/\s*$//;

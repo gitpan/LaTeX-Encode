@@ -15,7 +15,7 @@
 #   This module is free software; you can redistribute it and/or
 #   modify it under the same terms as Perl itself.
 #
-#   $Id: Encode.pm 28 2012-08-30 20:00:09Z andrew $
+#   $Id: Encode.pm 30 2012-09-25 20:24:40Z andrew $
 #========================================================================
 
 package LaTeX::Encode;
@@ -31,7 +31,7 @@ use Readonly;
 
 use base qw(Exporter);
 
-our $VERSION     = 0.06;
+our $VERSION     = 0.07;
 
 our @EXPORT      = qw(latex_encode);
 our @EXPORT_OK   = qw(add_latex_encodings remove_latex_encodings reset_latex_encodings);
@@ -54,6 +54,7 @@ sub latex_encode {
     my $exceptions    = $options->{except};
     my $iquotes       = $options->{iquotes};
     my $packages_reqd = $options->{packages};
+    my $unmatched     = $options->{unmatched};
 
 
     # If a list of exception characters was specified then we replace
@@ -97,6 +98,9 @@ sub latex_encode {
                     if ref $packages_reqd and exists $provided_by{$1};
                 $latex_encoding{$1} }gsxe;
 
+    $text =~ s{ ([\x{00}\x{02}-\x{09}\x{0b}\x{0c}\x{0e}-\x{1f}\x{007f}-\x{ffff}]) }
+              { _replace_unencoded_char(ord($1), $unmatched) }gxse;
+
 
     # If the caller specified exceptions then we need to decode them
 
@@ -105,6 +109,21 @@ sub latex_encode {
     }
 
     return $text;
+}
+
+
+sub _replace_unencoded_char {
+    my ($charcode, $action) = @_;
+    
+    if (ref $action eq 'CODE') {
+        return $action->($charcode);
+    }
+    elsif (($action || '') eq 'ignore') {
+        return '';
+    }
+    else {
+        return sprintf('\\%s{%04x}', $action || 'unmatched', $charcode);
+    }
 }
 
 
@@ -223,7 +242,7 @@ LaTeX::Encode - encode characters for LaTeX formatting
 
 =head1 VERSION
 
-This manual page describes version 0.06 of the C<LaTeX::Encode> module.
+This manual page describes version 0.07 of the C<LaTeX::Encode> module.
 
 
 =head1 DESCRIPTION
@@ -248,6 +267,34 @@ document.
 The function is useful for encoding data that is interpolated into
 LaTeX document templates, say with C<Template::Plugin::Latex>
 (shameless plug!).
+
+=head1 WARNING ABOUT UTF-8 DATA
+
+Note that C<latex_encode()> will encode a UTF8 string (a string with the UTF8 flag set) or
+a non-UTF8 string, which will normally be regarded as ISO-8859-1 (Latin 1) and will be
+upgraded to UTF8.  The UTF8 flag indicates whether the contents of a string are regarded
+as a sequence of Unicode characters or as a string of bytes.  Refer to the L<Unicode
+Support in Perl|perlunicode>, L<Perl Unicode Introduction|perluniintro> and L<Perl Unicode
+Tutorial|perlunitut> manual pages for more details.
+
+If you are seeing spurious LaTeX commands in the output of C<latex_encode()> then it may
+be that you are reading from a UTF-8 input or have data with UTF-8 characters in a literal
+but the UTF8 flag is not being set correctly.  The fact that your programs are dealing
+with UTF-8 characters on a byte-by-byte basis may not be apparent normally as the terminal
+may make no distinction and happily display the byte sequence in the program's output as
+the UTF-8 characters they represent, however in a Perl program that deals with individual
+characters, what happens is that the individual bytes that make up multi-byte characters
+are regarded as separate characters; if the strings are promoted to UTF8 strings then the
+individual bytes are converted separately to UTF8.  This is termed double encoding.
+C<latex_encode()> will then map the double-encoded characters.
+
+If the input text is Western European text then what you are likely to see in the output
+from C<latex_encode()> is spurious sequences of C<{\^A}> or C<{\~A}> followed by the
+mapping of an apparently random character (or the right character if it is a symbol such
+as the Sterling POUND sign, i.e. "£" will map to C<{\^A}\textsterling>); this is because
+the initial byte of a two-byte UTF-8 character in the LATIN1 range will either be 0xC2 or
+0xC3 and the next byte will always have the top two bits set to C<10> to indicate that it
+is a continuation byte.
 
 
 =head1 SUBROUTINES/METHODS
@@ -382,6 +429,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 =head1 SEE ALSO
 
 L<Template::Plugin::Latex>
+
+L<Unicode Support in Perl|perlunicode>
+
+L<Perl Unicode Introduction|perluniintro>
+
+L<Perl Unicode Tutorial|perlunitut>
 
 =cut
 

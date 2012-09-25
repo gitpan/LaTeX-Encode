@@ -1,13 +1,13 @@
 # LaTeX::Encode character encoding table
 # Note: this module was automatically generated
-# by build-encoding-table (version 28)
+# by build-encoding-table (version 30)
 
 package LaTeX::Encode::EncodingTable;
 
 use strict;
 use warnings;
 
-use parent 'Exporter';
+our @ISA = qw(Exporter);
 
 our @EXPORT = qw(%latex_encoding $encoded_char_re %provided_by);
 
@@ -659,7 +659,7 @@ This module is not intended to be used except by LaTeX::Encode.
 
 =head1 VERSION
 
-This manual page describes version 28 of the
+This manual page describes version 30 of the
 C<LaTeX::Encode::EncodingTable> module.
 
 =head1 DESCRIPTION

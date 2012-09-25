@@ -21,6 +21,10 @@ t/04-utf8.t
 t/05-add-encodings.t
 t/06-remove-encodings.t
 t/07-reset-encodings.t
+t/08-import-specs.t
+t/09-packages-reqd.t
+t/10-typeset-document.t
+t/11-unmatched-chars.t
 t/90-kwalitee.t
 t/91-pod.t
 t/92-pod-coverage.t

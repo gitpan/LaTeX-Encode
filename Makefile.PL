@@ -1,4 +1,4 @@
-# $Id: Makefile.PL 28 2012-08-30 20:00:09Z andrew $
+# $Id: Makefile.PL 30 2012-09-25 20:24:40Z andrew $
 
 use strict;
 use warnings;
@@ -22,6 +22,8 @@ WriteMakefile(
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'LaTeX-Encode-*' },
 );
+
+no warnings 'redefine';
 
 sub MY::postamble {
     return q{

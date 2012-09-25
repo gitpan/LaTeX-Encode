@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Script to build the LaTeX::Encode::EncodingTable module
 # This script is not meant to be installed.
-# $Id: build-encoding-table 28 2012-08-30 20:00:09Z andrew $
+# $Id: build-encoding-table 30 2012-09-25 20:24:40Z andrew $
 
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ use HTML::Entities qw(%char2entity);
 use Pod::LaTeX;
 
 
-our $revision = '$Revision: 28 $';
+our $revision = '$Revision: 30 $';
 $revision =~ s/.*?(\d+).*/$1/;
 
 # Map of character code to encoding that is built up, before being output.  It is
@@ -532,7 +532,7 @@ __DATA__
 # use strict;
 # use warnings;
 #
-# use parent 'Exporter';
+# our @ISA = qw(Exporter);
 #
 # our @EXPORT = qw(%latex_encoding $encoded_char_re %provided_by);
 #

@@ -1,3 +1,14 @@
+2012-09-23  Andrew Ford  <a.ford@ford-mason.co.uk>
+
+        * version 0.07
+
+        * remove use of 'parent' in generated module
+
+        * add handling of unmatched characters
+
+        * add note about Unicode data that does not have the UTF8 flag set
+
+
 2012-08-29  Andrew Ford  <a.ford@ford-mason.co.uk>
 
         * version 0.06

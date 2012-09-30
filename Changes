@@ -1,3 +1,11 @@
+2012-09-30  Andrew Ford  <a.ford@ford-mason.co.uk>
+
+        * version 0.08
+
+        * change t/11-unmatched-chars.t to use an unmatched ideographic character instead
+          of 0x{ffff} as some versions of perl protest about having an illegal Unicode
+          character in a string.
+
 2012-09-23  Andrew Ford  <a.ford@ford-mason.co.uk>
 
         * version 0.07

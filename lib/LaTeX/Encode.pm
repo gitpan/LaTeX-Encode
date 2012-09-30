@@ -15,7 +15,7 @@
 #   This module is free software; you can redistribute it and/or
 #   modify it under the same terms as Perl itself.
 #
-#   $Id: Encode.pm 30 2012-09-25 20:24:40Z andrew $
+#   $Id: Encode.pm 32 2012-09-30 20:33:42Z andrew $
 #========================================================================
 
 package LaTeX::Encode;
@@ -31,7 +31,7 @@ use Readonly;
 
 use base qw(Exporter);
 
-our $VERSION     = 0.07;
+our $VERSION     = 0.08;
 
 our @EXPORT      = qw(latex_encode);
 our @EXPORT_OK   = qw(add_latex_encodings remove_latex_encodings reset_latex_encodings);
@@ -242,7 +242,7 @@ LaTeX::Encode - encode characters for LaTeX formatting
 
 =head1 VERSION
 
-This manual page describes version 0.07 of the C<LaTeX::Encode> module.
+This manual page describes version 0.08 of the C<LaTeX::Encode> module.
 
 
 =head1 DESCRIPTION

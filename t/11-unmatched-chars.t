@@ -14,4 +14,4 @@ use Test::More tests => 3;
 is(latex_encode("a\nb"), "a\nb",              'string including newline' );
 is(latex_encode("a\rb"), "a\rb",              'string including carriage return' );
 
-is(latex_encode("a\x{ffff}b"), "a\\unmatched{ffff}b",      'string including carriage return' );
+is(latex_encode("a\x{f900}b"), "a\\unmatched{f900}b",      'string including an unsupported ideograph' );

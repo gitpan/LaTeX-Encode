@@ -24,4 +24,4 @@ requires:
   Pod::LaTeX: 0
   Pod::Usage: 0
   Readonly: 0
-version: v0.091.1
+version: v0.091.2

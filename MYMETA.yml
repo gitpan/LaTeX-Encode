@@ -3,7 +3,8 @@ abstract: 'encode characters for LaTeX formatting'
 author:
   - 'Andrew Ford <a.ford@ford-mason.co.uk>'
 build_requires:
-  ExtUtils::MakeMaker: 0
+  Carp::Always: 0
+  Test::More: 0
 configure_requires:
   ExtUtils::MakeMaker: 0
 dynamic_config: 0
@@ -23,5 +24,4 @@ requires:
   Pod::LaTeX: 0
   Pod::Usage: 0
   Readonly: 0
-  Test::More: 0
 version: 0.08

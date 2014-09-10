@@ -1,12 +1,12 @@
 {
    "abstract" : "encode characters for LaTeX formatting",
    "author" : [
-      "Andrew Ford <a.ford@ford-mason.co.uk>"
+      "Chris Travers <chris@efficito.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "ExtUtils::MakeMaker version 6.72, CPAN::Meta::Converter version 2.132140",
    "license" : [
-      "unknown"
+      "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
@@ -26,11 +26,6 @@
             "Test::More" : "0"
          }
       },
-      "configure" : {
-         "requires" : {
-            "ExtUtils::MakeMaker" : "0"
-         }
-      },
       "runtime" : {
          "requires" : {
             "Getopt::Long" : "0",
@@ -42,5 +37,12 @@
       }
    },
    "release_status" : "stable",
-   "version" : "v0.091.5"
+   "resources" : {
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/einhverfr/LaTeX-Encode.git",
+         "web" : "https://github.com/einhverfr/LaTeX-Encode"
+      }
+   },
+   "version" : "v0.091.6"
 }
